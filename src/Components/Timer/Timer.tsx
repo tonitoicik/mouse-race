@@ -1,40 +1,52 @@
-import React, { useState, useEffect } from "react";
+import React, { Component } from "react";
 
 interface TimerProps {
-  isGameRunning: boolean;
-  clickedCounter: number;
-  onGameFinish: (finalTime: number) => void
+  onGameFinish: (finalTime: number) => void;
 }
 
-const Timer: React.FC<TimerProps> = ({ isGameRunning, clickedCounter, onGameFinish }) => {
-  const [time, setTime] = useState(0);
+class Timer extends Component<TimerProps, { time: number }> {
+  private intervalId: NodeJS.Timeout | null = null;
 
-  useEffect(() => {
-    let intervalId: NodeJS.Timeout;
-
-    intervalId = setInterval(() => {
-      if (isGameRunning) {
-        setTime((prevTime) => prevTime + 1);
-      }
-    }, 1000);
-
-
-    return () => {
-      clearInterval(intervalId)
+  constructor(props: TimerProps) {
+    super(props);
+    this.state = {
+      time: 0,
     };
-  }, [isGameRunning]);
+  }
 
-  useEffect(() => {
-    if (clickedCounter === 0) {
-      onGameFinish(time)
+  componentDidMount() {
+    this.startTimer();
+  }
+
+  componentWillUnmount() {
+    this.stopTimer();
+    this.props.onGameFinish(this.state.time);
+  }
+
+  private startTimer() {
+    if (!this.intervalId) {
+      this.intervalId = setInterval(() => {
+        this.setState((prevState) => ({
+          time: parseFloat((prevState.time + 0.01).toFixed(2)),
+        }));
+      }, 10);
     }
-  }, [clickedCounter]);
+  }
 
-  return (
-      <div>
-        <p>Time: {time} seconds</p>
-      </div>
-  );
-};
+  private stopTimer() {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+      this.intervalId = null;
+    }
+  }
+
+  render() {
+    return (
+        <div>
+          <p>Time: {this.state.time} seconds</p>
+        </div>
+    );
+  }
+}
 
 export default Timer;

@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { Component } from "react";
 import { ref, query, orderByChild, limitToFirst, get, DataSnapshot } from "firebase/database";
-import Css from './Leaderboard.module.css'
+import Css from './Leaderboard.module.css';
 import db from "../../Config/firebaseConfig";
 
 interface LeaderboardEntry {
@@ -8,12 +8,20 @@ interface LeaderboardEntry {
   time: number;
 }
 
-const Leaderboard: React.FC = () => {
-  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+class Leaderboard extends Component {
+  state = {
+    leaderboard: [] as LeaderboardEntry[],
+  };
 
-  useEffect(() => {
+  componentDidMount() {
+    this.fetchLeaderboardData();
+  }
+  componentDidUpdate() {
+    this.fetchLeaderboardData();
+  }
+
+  fetchLeaderboardData() {
     const leaderboardRef = ref(db, "leaderboard");
-
     const leaderboardQuery = query(
         leaderboardRef,
         orderByChild("time"),
@@ -28,21 +36,26 @@ const Leaderboard: React.FC = () => {
         leaderboardData.push(entry);
       });
 
-      setLeaderboard(leaderboardData);
+      this.setState({
+        leaderboard: leaderboardData,
+      });
     });
+  }
 
-  }, []);
+  render() {
+    const { leaderboard } = this.state;
 
-  return (
-    <div className={Css.wrapper}>
-      <h2 className={Css.centered}>Leaderboard</h2>
-        {leaderboard.map((entry) => (
-            <p className={Css.centered}>
-              {entry.name}: {entry.time} seconds
-            </p>
-        ))}
-    </div>
-  );
-};
+    return (
+        <div className={Css.wrapper}>
+          <h2 className={Css.centered}>Leaderboard</h2>
+          {leaderboard.map((entry) => (
+              <p key={entry.name} className={Css.centered}>
+                {entry.name}: {entry.time} seconds
+              </p>
+          ))}
+        </div>
+    );
+  }
+}
 
 export default Leaderboard;

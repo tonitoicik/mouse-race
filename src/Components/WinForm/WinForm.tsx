@@ -1,48 +1,71 @@
-import React, {useState} from "react";
+import React, { Component } from "react";
 import submitScoreToLeaderboard from "../../Utils/submitScoreToLeaderboard";
-import Css from './WinForm.module.css'
+import Css from './WinForm.module.css';
 
 interface WinFormProps {
   finalTime: number;
 }
-const WinForm: React.FC<WinFormProps> = ({finalTime}) => {
-  const [name, setName] = useState("");
-  const [isVisible, setIsVisible] = useState(true);
 
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setName(e.target.value);
+interface WinFormState {
+  name: string;
+  isVisible: boolean;
+}
+
+class WinForm extends Component<WinFormProps, WinFormState> {
+  constructor(props: WinFormProps) {
+    super(props);
+    this.state = {
+      name: "",
+      isVisible: true,
+    };
+  }
+
+  handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      name: e.target.value,
+    });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const { name } = this.state;
+    const { finalTime } = this.props;
 
     if (name.trim() === "") {
       alert("Please enter your name.");
     } else {
-      await submitScoreToLeaderboard(name, finalTime)
-      setIsVisible(false);
-      setName("");
+      await submitScoreToLeaderboard(name, finalTime);
+      this.setState({
+        isVisible: false,
+        name: "",
+      });
     }
   };
 
-  return (
-    <div>
-      <p className={Css.centered}>Your time is: {finalTime} seconds</p>
-      <input
-          type="text"
-          placeholder="Enter your name"
-          value={name}
-          onChange={handleNameChange}
-          className={`${isVisible ? "" : Css.invisible} ${Css.input_field}`}
-      />
-      <button
-          onClick={handleSubmit}
-          className={isVisible ? "" : Css.invisible}
-      >
-        Submit
-      </button>
-    </div>
-  )
+  render() {
+    const { finalTime } = this.props;
+    const { name, isVisible } = this.state;
+
+    return (
+        <div>
+          <p className={Css.centered}>Your time is: {finalTime} seconds</p>
+          <input
+              type="text"
+              placeholder="Enter your name"
+              value={name}
+              onChange={this.handleNameChange}
+              className={`${isVisible ? "" : Css.invisible} ${Css.input_field}`}
+          />
+          <button
+              onClick={this.handleSubmit}
+              className={isVisible ? "" : Css.invisible}
+          >
+            Submit
+          </button>
+        </div>
+    );
+  }
 }
 
 export default WinForm;

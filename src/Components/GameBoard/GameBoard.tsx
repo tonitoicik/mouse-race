@@ -1,21 +1,23 @@
-import React, {useMemo} from "react";
+import React, { Component } from "react";
+import { generateUniquePositions, Position } from "../../Utils/generateUniquePositions";
 import Css from './GameBoard.module.css'
-import {generateUniquePositions, Position} from "../../Utils/generateUniquePositions";
 
 interface GameBoardProps {
-  generateGameElements:  (positions: Position[]) => React.ReactNode[]
+  generateGameElements: (positions: Position[]) => React.ReactNode[];
 }
 
-const GameBoard: React.FC<GameBoardProps> = ({
-  generateGameElements
-}) => {
-  const positions = useMemo(() => generateUniquePositions(12), []);
+class GameBoard extends Component<GameBoardProps> {
+  positions: Position[] = generateUniquePositions(12);
 
-  return (
-      <div className={Css.board}>
-        {generateGameElements(positions)}
-      </div>
-  )
+  render() {
+    const { generateGameElements } = this.props;
+
+    return (
+        <div className={Css.board}>
+          {generateGameElements(this.positions)}
+        </div>
+    );
+  }
 }
 
-export default GameBoard
+export default GameBoard;

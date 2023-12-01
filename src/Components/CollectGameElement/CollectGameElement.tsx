@@ -1,39 +1,41 @@
-import React, {useMemo, useState} from "react";
+import React, { Component } from "react";
 import GameElement from "../GameElement/GameElement";
-import {generateRandomNumber} from "../../Utils/generateRandomNumber";
+import { generateRandomNumber } from "../../Utils/generateRandomNumber";
 
-interface CollectGameElementProps{
+interface CollectGameElementProps {
   positionX: number;
   positionY: number;
   onClickCollectElement: () => void;
 }
 
-const CollectGameElement: React.FC<CollectGameElementProps> = ({
-  onClickCollectElement,
-  positionY,
-  positionX,
-}) => {
-  const [isVisible, setIsVisible] = useState(true)
-  const randomHeight = useMemo(()=> generateRandomNumber(30, 60),[]);
+class CollectGameElement extends Component<CollectGameElementProps> {
+  state = {
+    isVisible: true,
+  };
 
-  const onCollect = () => {
-    setIsVisible(false)
-    onClickCollectElement();
+  randomHeight = generateRandomNumber(30, 60);
+
+  onCollect = () => {
+    this.setState({ isVisible: false });
+    this.props.onClickCollectElement();
+  };
+
+  render() {
+    const { isVisible } = this.state;
+    const { positionX, positionY } = this.props;
+
+    return isVisible ? (
+        <GameElement
+            width={this.randomHeight * 2}
+            height={this.randomHeight}
+            onClick={this.onCollect}
+            color={"#00FF00"}
+            shape={"rectangle"}
+            positionX={positionX}
+            positionY={positionY}
+        />
+    ) : null;
   }
-
-  return isVisible ? (
-      <GameElement
-          width={randomHeight * 2}
-          height={randomHeight}
-          onClick={onCollect}
-          color={"#00FF00"}
-          shape={"rectangle"}
-          positionX={positionX}
-          positionY={positionY}
-      />
-  ) : (
-      <></>
-  )
-};
+}
 
 export default CollectGameElement;
