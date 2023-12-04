@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import GameLogic from "../../GameLogic/GameLogic";
 
 interface GameElementProps {
   height: number;
@@ -7,10 +8,12 @@ interface GameElementProps {
   color: string;
   positionX: number;
   positionY: number;
-  onClick: () => void;
+  gameLogic: GameLogic;
 }
 
 class GameElement extends Component<GameElementProps> {
+  onClick= (): void => {return;};
+
   render() {
     const {
       height,
@@ -19,7 +22,6 @@ class GameElement extends Component<GameElementProps> {
       color,
       positionX,
       positionY,
-      onClick,
     } = this.props;
     const borderRadius = shape === "circle" ? width : 0;
 
@@ -34,7 +36,7 @@ class GameElement extends Component<GameElementProps> {
               top: `${positionY}px`,
               left: `${positionX}px`,
             }}
-            onClick={onClick}
+            onClick={this.onClick}
         ></div>
     );
   }

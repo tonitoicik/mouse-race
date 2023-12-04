@@ -1,40 +1,20 @@
-import React, { Component } from "react";
+import React from "react";
 import GameElement from "../GameElement/GameElement";
-import { generateRandomNumber } from "../../Utils/generateRandomNumber";
 
-interface CollectGameElementProps {
-  positionX: number;
-  positionY: number;
-  onClickCollectElement: () => void;
-}
-
-class CollectGameElement extends Component<CollectGameElementProps> {
+class CollectGameElement extends GameElement {
   state = {
     isVisible: true,
   };
 
-  randomHeight = generateRandomNumber(30, 60);
-
-  onCollect = () => {
+  onClick = () => {
     this.setState({ isVisible: false });
-    this.props.onClickCollectElement();
+    this.props.gameLogic.handleCollectGameElementClick();
   };
 
   render() {
     const { isVisible } = this.state;
-    const { positionX, positionY } = this.props;
 
-    return isVisible ? (
-        <GameElement
-            width={this.randomHeight * 2}
-            height={this.randomHeight}
-            onClick={this.onCollect}
-            color={"#00FF00"}
-            shape={"rectangle"}
-            positionX={positionX}
-            positionY={positionY}
-        />
-    ) : null;
+    return isVisible ? super.render(): <></>;
   }
 }
 

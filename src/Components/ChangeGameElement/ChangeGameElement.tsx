@@ -1,30 +1,18 @@
-import React, { Component} from "react";
+import React from "react";
 import GameElement from "../GameElement/GameElement";
 import { generateRandomNumber } from "../../Utils/generateRandomNumber";
-
-interface ChangeGameElementProps {
-  positionX: number;
-  positionY: number;
-  onClickAvoidElement: () => void;
-  onClickCollectElement: () => void;
-}
 
 interface ChangeGameElementState {
   isVisible: boolean;
   isCollect: boolean;
 }
 
-class ChangeGameElement extends Component<ChangeGameElementProps, ChangeGameElementState> {
-  onlySideSize = generateRandomNumber(30, 70);
+class ChangeGameElement extends GameElement {
   toggleInterval: NodeJS.Timeout | null = null;
-
-  constructor(props: ChangeGameElementProps) {
-    super(props);
-    this.state = {
-      isVisible: true,
-      isCollect: true,
-    };
-  }
+  state = {
+    isVisible: true,
+    isCollect: true,
+  };
 
   componentDidMount() {
     this.startToggleBehavior();
@@ -35,7 +23,10 @@ class ChangeGameElement extends Component<ChangeGameElementProps, ChangeGameElem
   }
 
   startToggleBehavior() {
-    this.toggleInterval = setInterval(this.toggleBehavior, generateRandomNumber(1500, 3000));
+    this.toggleInterval = setInterval(
+        this.toggleBehavior,
+        generateRandomNumber(1500, 3000)
+    );
   }
 
   stopToggleBehavior() {
@@ -45,41 +36,46 @@ class ChangeGameElement extends Component<ChangeGameElementProps, ChangeGameElem
   }
 
   toggleBehavior = () => {
-    this.setState((prevState) => ({ isCollect: !prevState.isCollect }));
+    this.setState((prevState: ChangeGameElementState) => ({
+      isCollect: !prevState.isCollect,
+    }));
   };
 
-  onCollectClick = () => {
-    this.setState({ isVisible: false });
-    this.props.onClickCollectElement();
+  onClick = () => {
+    if (this.state.isCollect) {
+      this.props.gameLogic.handleCollectGameElementClick();
+      this.setState({ isVisible: false });
+    } else {
+      this.props.gameLogic.handleAvoidGameElementClick();
+    }
   };
 
   render() {
-    const { isVisible, isCollect } = this.state;
-    const { positionX, positionY, onClickAvoidElement } = this.props;
+    const { isCollect, isVisible } = this.state;
+    const color = isCollect ? "#00FF00" : "#FF0000";
 
-    const currentElement = isCollect ? (
-        <GameElement
-            width={this.onlySideSize}
-            height={this.onlySideSize}
-            onClick={this.onCollectClick}
-            color={"#00FF00"}
-            shape={"circle"}
-            positionX={positionX}
-            positionY={positionY}
-        />
-    ) : (
-        <GameElement
-            width={this.onlySideSize}
-            height={this.onlySideSize}
-            onClick={onClickAvoidElement}
-            color={"#FF0000"}
-            shape={"circle"}
-            positionX={positionX}
-            positionY={positionY}
-        />
+    if (!isVisible) {
+      return <></>;
+    }
+
+    const { height, width, shape, positionX, positionY } = this.props;
+
+    const borderRadius = shape === "circle" ? width : 0;
+
+    return (
+        <div
+            style={{
+              height: `${height}px`,
+              width: `${width}px`,
+              backgroundColor: color,
+              borderRadius: `${borderRadius}px`,
+              position: "absolute",
+              top: `${positionY}px`,
+              left: `${positionX}px`,
+            }}
+            onClick={this.onClick}
+        ></div>
     );
-
-    return isVisible ? <>{currentElement}</> : null;
   }
 }
 

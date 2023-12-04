@@ -3,6 +3,7 @@ import { Position } from "../Utils/generateUniquePositions";
 import ChangeGameElement from "../Components/ChangeGameElement/ChangeGameElement";
 import CollectGameElement from "../Components/CollectGameElement/CollectGameElement";
 import AvoidGameElement from "../Components/AvoidGameElement/AvoidGameElement";
+import { generateRandomNumber } from "../Utils/generateRandomNumber";
 
 class GameLogic {
   isGameRunning: boolean = false;
@@ -32,33 +33,55 @@ class GameLogic {
     this.notifyObservers();
   };
 
-  generateGameElements: (positions: Position[]) => React.ReactNode[] = (positions) => {
+  generateGameElements: (positions: Position[]) => React.ReactNode[] = (
+      positions
+  ) => {
     return [
-      ...positions.slice(0, 3).map((position, index) => (
-          <ChangeGameElement
-              key={`change-${index}`}
-              positionX={position.left}
-              positionY={position.top}
-              onClickCollectElement={this.handleCollectGameElementClick}
-              onClickAvoidElement={this.handleAvoidGameElementClick}
-          />
-      )),
-      ...positions.slice(3, 9).map((position, index) => (
-          <CollectGameElement
-              key={`collect-${index}`}
-              positionX={position.left}
-              positionY={position.top}
-              onClickCollectElement={this.handleCollectGameElementClick}
-          />
-      )),
-      ...positions.slice(9).map((position, index) => (
-          <AvoidGameElement
-              key={`avoid-${index}`}
-              positionX={position.left}
-              positionY={position.top}
-              onClickAvoidElement={this.handleAvoidGameElementClick}
-          />
-      )),
+      ...positions.slice(0, 3).map((position, index) => {
+        const sideSize = generateRandomNumber(30, 60);
+        return (
+            <ChangeGameElement
+                key={`change-${index}`}
+                positionX={position.left}
+                positionY={position.top}
+                color={"transparent"}
+                shape={"circle"}
+                width={sideSize}
+                height={sideSize}
+                gameLogic={this}
+            />
+        );
+      }),
+      ...positions.slice(3, 9).map((position, index) => {
+        const sideSize = generateRandomNumber(30, 60);
+        return (
+            <CollectGameElement
+                key={`collect-${index}`}
+                positionX={position.left}
+                positionY={position.top}
+                color={"#00FF00"}
+                shape={"rectangle"}
+                width={sideSize * 2}
+                height={sideSize}
+                gameLogic={this}
+            />
+        );
+      }),
+      ...positions.slice(9).map((position, index) => {
+        const sideSize = generateRandomNumber(30, 60);
+        return (
+            <AvoidGameElement
+                key={`avoid-${index}`}
+                positionX={position.left}
+                positionY={position.top}
+                color={"#FF0000"}
+                shape={"square"}
+                width={sideSize}
+                height={sideSize}
+                gameLogic={this}
+            />
+        );
+      }),
     ];
   };
 
